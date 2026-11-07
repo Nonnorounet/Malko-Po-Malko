@@ -1,0 +1,476 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Malko po Malko</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;0,800;1,500&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&subset=cyrillic&display=swap">
+<style>
+/* Layout: narrow study column under an embroidered band; tabs switch Learn / Flashcards / Quiz / Alphabet */
+:root{
+  --bg:#f3f5f1; --surface:#ffffff; --ink:#1c2420; --muted:#5d6a63; --line:#d9dfd9;
+  --rose:#b3263a; --rose-soft:#f7e3e5; --leaf:#2f6b4a; --leaf-soft:#e2efe7;
+  --display:"Alegreya", Georgia, "Times New Roman", serif;
+  --body:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a17; --surface:#1d2521; --ink:#e8ede9; --muted:#9aa8a0; --line:#2f3a34;
+  --rose:#ec6b7d; --rose-soft:#3a1f25; --leaf:#6cc294; --leaf-soft:#1c3328; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a17; --surface:#1d2521; --ink:#e8ede9; --muted:#9aa8a0; --line:#2f3a34;
+  --rose:#ec6b7d; --rose-soft:#3a1f25; --leaf:#6cc294; --leaf-soft:#1c3328; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.band{height:14px;background:
+  linear-gradient(135deg,var(--rose) 25%,transparent 25%) -7px 0/14px 14px,
+  linear-gradient(225deg,var(--rose) 25%,transparent 25%) -7px 0/14px 14px,
+  linear-gradient(315deg,var(--leaf) 25%,transparent 25%) 0 0/14px 14px,
+  linear-gradient(45deg,var(--leaf) 25%,transparent 25%) 0 0/14px 14px,var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:24px}
+header h1{font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,6vw,3rem);line-height:1.05;margin:0;text-wrap:balance}
+header h1 span{color:var(--rose)}
+header p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.stats{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:12px;align-items:center}
+.stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+.meter{flex:1 1 160px;height:6px;background:var(--line);border-radius:3px;overflow:hidden;min-width:120px}
+.meter i{display:block;height:100%;background:var(--leaf);width:0;transition:width .4s}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{font:600 14px var(--body);background:none;border:0;color:var(--muted);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--rose)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap}
+input[type=search],select{font:500 14px var(--body);padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);flex:1 1 180px;min-width:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 12.5px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:6px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.list{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.word{display:grid;grid-template-columns:1fr auto;gap:4px 14px;padding:16px 2px;border-bottom:1px solid var(--line)}
+.word .bg{font-family:var(--display);font-weight:700;font-size:1.45rem;line-height:1.2}
+.word .en{font-weight:600}
+.pron{font-family:var(--mono);font-size:12.5px;color:var(--rose)}
+.tr{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.ex{grid-column:1/-1;font-size:14px;color:var(--muted);margin-top:4px;min-width:0}
+.ex q{font-family:var(--display);font-style:italic;font-size:1.05rem;color:var(--ink);quotes:none}
+.note{grid-column:1/-1;font-size:13px;background:var(--leaf-soft);color:var(--ink);padding:6px 10px;border-radius:6px;margin-top:4px}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.icon{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;font-size:15px}
+.icon:hover{border-color:var(--rose);color:var(--rose)}
+.known{font:600 11px var(--body);letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:none;color:var(--muted);padding:4px 8px;border-radius:5px;cursor:pointer}
+.known[aria-pressed="true"]{background:var(--leaf);border-color:var(--leaf);color:var(--surface)}
+.empty{color:var(--muted);padding:24px 0}
+/* flashcards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-height:300px;padding:28px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;cursor:pointer;box-shadow:0 10px 30px -18px rgba(0,0,0,.35)}
+.card .big{font-family:var(--display);font-weight:800;font-size:clamp(2rem,8vw,3rem);line-height:1.1;text-wrap:balance}
+.card .hint{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.card .back{display:flex;flex-direction:column;gap:6px;align-items:center;border-top:1px dashed var(--line);padding-top:14px;margin-top:6px;width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{font:700 14px var(--body);padding:12px 18px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;flex:1 1 140px}
+.btn.again{border-color:var(--rose);color:var(--rose)}
+.btn.good{background:var(--leaf);border-color:var(--leaf);color:var(--surface)}
+.btn.primary{background:var(--rose);border-color:var(--rose);color:var(--surface)}
+.sub{font-size:13px;color:var(--muted);text-align:center}
+/* quiz */
+.q{font-family:var(--display);font-weight:800;font-size:2.2rem;text-align:center;margin:8px 0 2px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.opts{grid-template-columns:1fr}}
+.opt{font:600 15px var(--body);text-align:left;padding:14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.opt.right{background:var(--leaf-soft);border-color:var(--leaf)}
+.opt.wrong{background:var(--rose-soft);border-color:var(--rose)}
+.opt:disabled{cursor:default}
+.score{font-family:var(--display);font-size:3.2rem;font-weight:800;text-align:center;color:var(--leaf)}
+/* alphabet */
+.abc{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.letter{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:2px;cursor:pointer;text-align:left;color:var(--ink);font:inherit}
+.letter b{font-family:var(--display);font-size:1.9rem;line-height:1}
+.letter span{font-size:13px;color:var(--muted)}
+.letter.tricky{border-color:var(--rose)}
+.tip{background:var(--rose-soft);border-radius:10px;padding:14px 16px;font-size:14px}
+.tip strong{color:var(--rose)}
+.voice{font-size:12.5px;color:var(--muted)}
+.auto{font:600 10.5px var(--body);color:var(--muted);border:1px dashed var(--line);border-radius:4px;padding:1px 6px;vertical-align:middle;letter-spacing:.04em;cursor:help}
+.linkbtn{font:600 12.5px var(--body);background:none;border:0;color:var(--leaf);cursor:pointer;padding:0;text-decoration:underline}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="band" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <h1>Малко по малко <span>·</span> Malko po malko</h1>
+    <p>Everyday Bulgarian, little by little. Tap ▶ to hear a word, mark the ones you know, and drill the rest with flashcards and quizzes.</p>
+    <div class="stats"><span><b id="knownCount">0</b> / <b id="totalCount">0</b> words known</span><div class="meter"><i id="meter"></i></div></div>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" data-view="learn" aria-selected="true">Learn</button>
+    <button role="tab" data-view="week" aria-selected="false">This week</button>
+    <button role="tab" data-view="cards" aria-selected="false">Flashcards</button>
+    <button role="tab" data-view="quiz" aria-selected="false">Quiz</button>
+    <button role="tab" data-view="abc" aria-selected="false">Alphabet</button>
+  </nav>
+
+  <section id="learn">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="toolbar"><input id="search" type="search" placeholder="Search in English, Cyrillic or Latin letters…"></div>
+      <div class="chips" id="chips"></div>
+      <div class="list" id="list"></div>
+    </div>
+  </section>
+
+  <section id="week" hidden>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="tip"><strong>This week's objectives</strong> come straight from your Google Sheet. Add or edit a row there and it shows up here within a few minutes. They're also in Flashcards and Quiz under “This week”.</div>
+      <div class="stats" style="margin:0"><span id="weekProg"></span><div class="meter"><i id="weekMeter"></i></div></div>
+      <div class="row" style="justify-content:flex-start"><button class="btn primary" id="wkCards" style="flex:0 1 auto">Drill as flashcards</button><button class="btn" id="wkQuiz" style="flex:0 1 auto">Quiz me</button></div>
+      <div class="list" id="weekList"></div>
+      <p class="voice"><span id="weekStatus">Loading your list…</span> <button class="linkbtn" id="wkRefresh" hidden>Refresh now</button></p>
+    </div>
+  </section>
+
+  <section id="cards" hidden>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="toolbar">
+        <select id="cardCat"></select>
+        <select id="cardDir"><option value="bg">Bulgarian → English</option><option value="en">English → Bulgarian</option></select>
+        <select id="cardPool"><option value="new">Words I don't know yet</option><option value="all">All words</option></select>
+      </div>
+      <div id="cardArea"></div>
+    </div>
+  </section>
+
+  <section id="quiz" hidden>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="toolbar">
+        <select id="quizCat"></select>
+        <select id="quizDir"><option value="bg">See Bulgarian, pick English</option><option value="en">See English, pick Bulgarian</option></select>
+      </div>
+      <div id="quizArea"></div>
+    </div>
+  </section>
+
+  <section id="abc" hidden>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="tip"><strong>Good news:</strong> Bulgarian is spelled almost exactly as it sounds. Learn these 30 letters and you can read anything aloud. Letters with a red border look familiar but sound different, so watch those first. Stress is not written, which is why each word in this app shows the stressed syllable in CAPITALS.</div>
+      <div class="abc" id="abcGrid"></div>
+    </div>
+  </section>
+
+  <p class="voice" id="voiceNote"></p>
+</div>
+
+<script>
+// [Cyrillic, transliteration, pronunciation (STRESS in caps), English, example BG, example EN, note]
+const DATA = {
+"Greetings & basics":[
+["Здравей","zdravey","zdra-VEY","Hi / Hello (to one friend)","Здравей, как си?","Hi, how are you?","Use Здравейте (zdra-VEY-te) for several people or someone you address formally."],
+["Добро утро","dobro utro","do-BRO OO-tro","Good morning","Добро утро, скъпа!","Good morning, darling!"],
+["Добър ден","dobar den","DO-bur den","Good day / Hello","Добър ден, може ли едно кафе?","Good day, could I have a coffee?","The standard polite greeting in shops and with her parents' friends."],
+["Добър вечер","dobar vecher","DO-bur VE-cher","Good evening","Добър вечер на всички!","Good evening, everyone!"],
+["Лека нощ","leka nosht","LE-ka nosht","Good night","Лека нощ и сладки сънища.","Good night and sweet dreams."],
+["Довиждане","dovizhdane","do-VEEZH-da-ne","Goodbye (polite)","Довиждане и благодаря!","Goodbye and thank you!"],
+["Чао","chao","CHA-o","Bye (casual)","Чао, до утре!","Bye, see you tomorrow!","Used for both hello and goodbye among friends."],
+["Благодаря","blagodarya","bla-go-da-RYA","Thank you","Благодаря за вечерята.","Thank you for dinner."],
+["Мерси","mersi","mer-SEE","Thanks (casual)","Мерси, много мило!","Thanks, that's very kind!","Borrowed from French and very common in daily speech."],
+["Моля","molya","MO-lya","Please / You're welcome","Една бира, моля.","One beer, please.","Also the reply to Благодаря, and 'Pardon?' when you didn't hear."],
+["Извинете","izvinete","iz-vi-NE-te","Excuse me (polite)","Извинете, къде е тоалетната?","Excuse me, where is the toilet?","With friends say Извинявай (iz-vi-NYA-vay)."],
+["Съжалявам","sazhalyavam","su-zha-LYA-vam","I'm sorry","Съжалявам, закъснях.","I'm sorry, I'm late."],
+["Да","da","da","Yes","Да, разбира се.","Yes, of course.","Careful: Bulgarians traditionally nod for 'no' and shake the head for 'yes'."],
+["Не","ne","ne","No / not","Не, благодаря.","No, thank you."],
+["Как си?","kak si","kak SEE","How are you? (casual)","Здравей! Как си днес?","Hi! How are you today?","Polite form: Как сте? (kak STE)"],
+["Добре съм","dobre sam","dob-RE sum","I'm fine","Добре съм, а ти?","I'm fine, and you?"],
+["Приятно ми е","priyatno mi e","pri-YAT-no mee e","Nice to meet you","Аз съм Алекс. Приятно ми е!","I'm Alex. Nice to meet you!"],
+["Добре дошли","dobre doshli","dob-RE dosh-LEE","Welcome","Добре дошли в България!","Welcome to Bulgaria!"],
+["Наздраве","nazdrave","naz-DRA-ve","Cheers! / Bless you","Наздраве за нас!","Cheers to us!","Look people in the eye when you clink. Also said after someone sneezes."],
+],
+"Love & relationship":[
+["Обичам те","obicham te","o-BEE-cham te","I love you","Обичам те много.","I love you very much."],
+["Липсваш ми","lipsvash mi","LEEPS-vash mee","I miss you","Липсваш ми, кога се връщаш?","I miss you, when are you coming back?","Literally 'you are missing to me'."],
+["Скъпа","skapa","SKU-pa","Darling (to a woman)","Скъпа, искаш ли чай?","Darling, do you want tea?","To a man: скъпи (SKU-pi)."],
+["Миличка","milichka","MEE-lich-ka","Sweetie (to a woman)","Лека нощ, миличка.","Good night, sweetie."],
+["Любов","lyubov","lyu-BOV","Love (noun)","Ти си моята любов.","You are my love."],
+["Целувка","tseluvka","tse-LOOF-ka","Kiss","Една целувка за теб.","A kiss for you."],
+["Прегръдка","pregradka","pre-GRUT-ka","Hug","Имам нужда от прегръдка.","I need a hug."],
+["Красива","krasiva","kra-SEE-va","Beautiful (woman)","Много си красива днес.","You look very beautiful today."],
+["Приятелка","priyatelka","pri-YA-tel-ka","Girlfriend / female friend","Това е моята приятелка.","This is my girlfriend.","Context decides friend vs. partner. Гадже is the casual word for partner."],
+["Гадже","gadzhe","GAD-zhe","Boyfriend / girlfriend (casual)","Имаш ли гадже?","Do you have a boyfriend/girlfriend?","Grammatically neuter, so it works for either."],
+["Мисля за теб","mislya za teb","MEES-lya za teb","I'm thinking of you","Цял ден мисля за теб.","I've been thinking of you all day."],
+["Щастлив съм с теб","shtastliv sam s teb","shtast-LEEF sum s teb","I'm happy with you","Щастлив съм с теб.","I'm happy with you.","Male speaker. A woman says щастлива (shtast-LEE-va)."],
+["Сладки сънища","sladki sanishta","SLAT-ki SU-ni-shta","Sweet dreams","Лека нощ, сладки сънища!","Good night, sweet dreams!"],
+],
+"Family":[
+["Семейство","semeystvo","se-MEY-stvo","Family","Семейството ми живее в София.","My family lives in Sofia."],
+["Майка / мама","mayka / mama","MAY-ka / MA-ma","Mother / mum","Майка ти готви чудесно.","Your mother cooks wonderfully."],
+["Баща / тате","bashta / tate","ba-SHTA / TA-te","Father / dad","Баща ѝ обича риболов.","Her father loves fishing."],
+["Брат","brat","brat","Brother","Имаш ли брат?","Do you have a brother?"],
+["Сестра","sestra","ses-TRA","Sister","Сестра ми е учителка.","My sister is a teacher."],
+["Баба","baba","BA-ba","Grandmother","Баба прави най-хубавата баница.","Grandma makes the best banitsa."],
+["Дядо","dyado","DYA-do","Grandfather","Дядо има лозе на село.","Grandpa has a vineyard in the village."],
+["Родители","roditeli","ro-DEE-te-li","Parents","Ще се запозная с родителите ти.","I'm going to meet your parents."],
+["Леля","lelya","LE-lya","Aunt","Леля ми живее до морето.","My aunt lives by the sea."],
+["Чичо","chicho","CHEE-cho","Uncle (father's brother)","Чичо ми е много забавен.","My uncle is very funny.","Mother's brother is вуйчо (VOOY-cho)."],
+["Тъща","tashta","TU-shta","Mother-in-law (wife's mother)","Тъщата ме кани на обяд.","My mother-in-law is inviting me to lunch.","The star of many Bulgarian jokes."],
+],
+"Food & drink":[
+["Хляб","hlyab","hlyap","Bread","Подай ми хляба, моля.","Pass me the bread, please.","Final б is pronounced like p."],
+["Вода","voda","vo-DA","Water","Чаша вода, моля.","A glass of water, please."],
+["Кафе","kafe","ka-FE","Coffee","Да пием по кафе?","Shall we have a coffee?"],
+["Чай","chay","chay","Tea","Искаш ли чай с мед?","Do you want tea with honey?"],
+["Вино","vino","VEE-no","Wine","Червено или бяло вино?","Red or white wine?"],
+["Бира","bira","BEE-ra","Beer","Две бири, моля.","Two beers, please."],
+["Ракия","rakiya","ra-KEE-ya","Rakia (fruit brandy)","Дядо прави домашна ракия.","Grandpa makes homemade rakia.","Sipped slowly with salad at the start of the meal, never shot."],
+["Сирене","sirene","SEE-re-ne","White brine cheese","Шопска салата със сирене.","Shopska salad with white cheese.","Feta-like. Plain yellow cheese is кашкавал (kash-ka-VAL)."],
+["Баница","banitsa","BA-ni-tsa","Banitsa (cheese pastry)","За закуска ям баница.","I eat banitsa for breakfast."],
+["Шопска салата","shopska salata","SHOP-ska sa-LA-ta","Shopska salad","Една шопска салата, моля.","One shopska salad, please."],
+["Кисело мляко","kiselo mlyako","KEE-se-lo MLYA-ko","Yogurt","Българското кисело мляко е най-доброто.","Bulgarian yogurt is the best.","Literally 'sour milk'."],
+["Домат","domat","do-MAT","Tomato","Тези домати са много сладки.","These tomatoes are very sweet."],
+["Краставица","krastavitsa","KRAS-ta-vi-tsa","Cucumber","Таратор с краставица.","Tarator with cucumber."],
+["Месо","meso","me-SO","Meat","Не ям много месо.","I don't eat much meat."],
+["Пиле","pile","PEE-le","Chicken","Пиле с ориз за вечеря.","Chicken with rice for dinner."],
+["Гладен съм","gladen sam","GLA-den sum","I'm hungry","Много съм гладен!","I'm very hungry!","A woman says гладна съм (GLAD-na sum)."],
+["Вкусно е","vkusno e","FKOOS-no e","It's delicious","Много е вкусно, браво!","It's really tasty, well done!","Say this to her family's cooks."],
+["Добър апетит","dobar apetit","DO-bur a-pe-TEET","Enjoy your meal","Добър апетит на всички!","Enjoy your meal, everyone!"],
+["Сметката, моля","smetkata, molya","SMET-ka-ta MO-lya","The bill, please","Сметката, моля.","The bill, please."],
+],
+"Home":[
+["Къща","kashta","KU-shta","House","Къщата на баба е на село.","Grandma's house is in the village."],
+["Кухня","kuhnya","KOOH-nya","Kitchen","Ще бъда в кухнята.","I'll be in the kitchen."],
+["Спалня","spalnya","SPAL-nya","Bedroom","Спалнята е горе.","The bedroom is upstairs."],
+["Баня","banya","BA-nya","Bathroom","Банята е свободна.","The bathroom is free."],
+["Врата","vrata","vra-TA","Door","Затвори вратата, моля.","Close the door, please."],
+["Прозорец","prozorets","pro-ZO-rets","Window","Отвори прозореца.","Open the window."],
+["Легло","leglo","leg-LO","Bed","Отивам в леглото.","I'm going to bed."],
+["Маса","masa","MA-sa","Table","Вечерята е на масата.","Dinner is on the table."],
+["Ключ","klyuch","klyooch","Key","Къде са ми ключовете?","Where are my keys?"],
+["Котка","kotka","KOT-ka","Cat","Котката спи на дивана.","The cat is sleeping on the sofa."],
+["Куче","kuche","KOO-che","Dog","Кучето иска да излезе.","The dog wants to go out."],
+],
+"Time & days":[
+["Днес","dnes","dnes","Today","Какво правиш днес?","What are you doing today?"],
+["Утре","utre","OO-tre","Tomorrow","Ще се видим утре.","We'll see each other tomorrow."],
+["Вчера","vchera","FCHE-ra","Yesterday","Вчера беше хубав ден.","Yesterday was a nice day."],
+["Сега","sega","se-GA","Now","Сега съм зает.","I'm busy now."],
+["После","posle","POS-le","Later / afterwards","Ще ти звънна после.","I'll call you later."],
+["Понеделник","ponedelnik","po-ne-DEL-nik","Monday","В понеделник работя.","I work on Monday."],
+["Вторник","vtornik","FTOR-nik","Tuesday","Във вторник съм свободен.","I'm free on Tuesday."],
+["Сряда","sryada","SRYA-da","Wednesday","До сряда!","See you Wednesday!"],
+["Четвъртък","chetvartak","chet-VUR-tuk","Thursday","Четвъртък е днес.","Today is Thursday."],
+["Петък","petak","PE-tuk","Friday","В петък излизаме.","We're going out on Friday."],
+["Събота","sabota","SU-bo-ta","Saturday","В събота ще ходим на пазар.","On Saturday we'll go to the market."],
+["Неделя","nedelya","ne-DE-lya","Sunday","В неделя почиваме.","On Sunday we rest."],
+["Седмица","sedmitsa","SED-mi-tsa","Week","Следващата седмица.","Next week."],
+["Сутрин","sutrin","SOOT-rin","(In the) morning","Сутрин пия кафе.","In the morning I drink coffee."],
+["Вечер","vecher","VE-cher","(In the) evening","Вечер гледаме филм.","In the evening we watch a film."],
+],
+"Numbers":[
+["Едно","edno","ed-NO","One","Едно кафе, моля.","One coffee, please.","Changes with gender: един (masc.), една (fem.), едно (neut.)."],
+["Две","dve","dve","Two","Две бири.","Two beers.","Masculine: два (dva)."],
+["Три","tri","tree","Three","Три дни.","Three days."],
+["Четири","chetiri","CHE-ti-ri","Four","Четири часа.","Four o'clock."],
+["Пет","pet","pet","Five","Пет минути.","Five minutes."],
+["Шест","shest","shest","Six","Шест евро.","Six euros."],
+["Седем","sedem","SE-dem","Seven","В седем часа.","At seven o'clock."],
+["Осем","osem","O-sem","Eight","Осем човека.","Eight people."],
+["Девет","devet","DE-vet","Nine","Девет вечерта.","Nine in the evening."],
+["Десет","deset","DE-set","Ten","Десет минути пеша.","Ten minutes on foot."],
+["Сто","sto","sto","Hundred","Сто процента!","A hundred percent!"],
+],
+"Feelings & describing":[
+["Щастлив","shtastliv","shtast-LEEF","Happy","Днес съм много щастлив.","I'm very happy today.","Fem. щастлива. Most adjectives add -а for women."],
+["Уморен","umoren","oo-mo-REN","Tired","Уморен съм след работа.","I'm tired after work.","Fem. уморена."],
+["Тъжен","tazhen","TU-zhen","Sad","Защо си тъжна?","Why are you sad? (to a woman)"],
+["Добре","dobre","dob-RE","Good / well / OK","Добре, ще дойда.","OK, I'll come."],
+["Лошо","losho","LO-sho","Bad / badly","Лошо ми е.","I feel sick."],
+["Хубаво","hubavo","HOO-ba-vo","Nice / lovely","Колко хубаво време!","What lovely weather!"],
+["Голям","golyam","go-LYAM","Big","Голям проблем.","A big problem."],
+["Малък","malak","MA-luk","Small","Малък подарък за теб.","A small gift for you."],
+["Горещо","goreshto","go-RESH-to","Hot (weather)","Днес е много горещо.","It's very hot today."],
+["Студено","studeno","stu-DE-no","Cold","Студено ми е.","I'm cold."],
+["Скучно","skuchno","SKOOCH-no","Boring / bored","Скучно ми е.","I'm bored."],
+],
+"Everyday verbs":[
+["Искам","iskam","EES-kam","I want","Искам да те видя.","I want to see you.","Bulgarian has no infinitive, so verbs are listed in the 'I' form."],
+["Обичам","obicham","o-BEE-cham","I love / I really like","Обичам шоколад.","I love chocolate."],
+["Харесвам","haresvam","ha-RES-vam","I like","Харесвам тази песен.","I like this song."],
+["Говоря","govorya","go-VO-rya","I speak","Говоря малко български.","I speak a little Bulgarian."],
+["Разбирам","razbiram","raz-BEE-ram","I understand","Не разбирам, повтори, моля.","I don't understand, please repeat."],
+["Знам","znam","znam","I know","Не знам.","I don't know."],
+["Ям","yam","yam","I eat","Какво ще ядем?","What are we going to eat?"],
+["Пия","piya","PEE-ya","I drink","Пия вода.","I'm drinking water."],
+["Отивам","otivam","o-TEE-vam","I'm going","Отивам до магазина.","I'm going to the shop."],
+["Мога","moga","MO-ga","I can","Мога да ти помогна.","I can help you."],
+["Имам","imam","EE-mam","I have","Имам идея!","I have an idea!"],
+["Чакам","chakam","CHA-kam","I wait","Чакам те отвън.","I'm waiting for you outside."],
+["Спя","spya","spya","I sleep","Спя до късно в неделя.","I sleep late on Sunday."],
+["Работя","rabotya","ra-BO-tya","I work","Работя от вкъщи.","I work from home."],
+["Уча","ucha","OO-cha","I learn / study","Уча български заради теб.","I'm learning Bulgarian because of you."],
+],
+"Questions":[
+["Какво?","kakvo","kak-VO","What?","Какво правиш?","What are you doing?","Casually shortened to Кво? (kvo)."],
+["Кой?","koy","koy","Who?","Кой е това?","Who is that?"],
+["Къде?","kade","ku-DE","Where?","Къде си?","Where are you?"],
+["Кога?","koga","ko-GA","When?","Кога ще се видим?","When will we see each other?"],
+["Защо?","zashto","zash-TO","Why?","Защо се смееш?","Why are you laughing?"],
+["Колко?","kolko","KOL-ko","How much / many?","Колко струва това?","How much does this cost?"],
+["Как се казваш?","kak se kazvash","kak se KAZ-vash","What's your name?","Как се казваш? Казвам се Алекс.","What's your name? My name is Alex."],
+["Може ли…?","mozhe li","MO-zhe lee","May I / Could I…?","Може ли сметката?","Could we have the bill?"],
+["Говориш ли английски?","govorish li angliyski","go-vo-REESH lee an-GLEES-kee","Do you speak English?","Извинете, говорите ли английски?","Excuse me, do you speak English? (polite)"],
+],
+"Useful expressions":[
+["Няма проблем","nyama problem","NYA-ma prob-LEM","No problem","— Благодаря! — Няма проблем.","— Thanks! — No problem."],
+["Хайде","hayde","HAY-de","Come on / Let's go","Хайде, че закъсняваме!","Come on, we're late!","Often spoken as айде."],
+["Браво","bravo","BRA-vo","Well done!","Браво, много добре!","Well done, very good!"],
+["Ей сега","ey sega","ey se-GA","Just a moment / Right away","Ей сега идвам.","I'm coming right now.","Can mean 'in a minute' or 'in an hour'."],
+["Абе","abe","A-be","Hey / well… (filler)","Абе, не знам.","Well, I don't know.","Very informal, only with close friends."],
+["Пази се","pazi se","PA-zee se","Take care","Чао, пази се!","Bye, take care!"],
+["Честит рожден ден","chestit rozhden den","che-STEET rozh-DEN den","Happy birthday","Честит рожден ден, скъпа!","Happy birthday, darling!","Bulgarians also celebrate name days: Честит имен ден."],
+["Весела Коледа","vesela Koleda","VE-se-la KO-le-da","Merry Christmas","Весела Коледа на цялото семейство!","Merry Christmas to the whole family!"],
+["Майко мила","mayko mila","MAY-ko MEE-la","Oh my goodness!","Майко мила, колко е късно!","Oh my, it's so late!","Literally 'dear mother'."],
+["Наистина ли?","naistina li","na-EES-ti-na lee","Really?","Наистина ли? Не вярвам!","Really? I don't believe it!"],
+]};
+
+const ABC=[["А а","a as in father"],["Б б","b"],["В в","v"],["Г г","g as in go"],["Д д","d"],["Е е","e as in bet"],["Ж ж","zh, like s in pleasure",1],["З з","z"],["И и","ee as in see",1],["Й й","y as in boy"],["К к","k"],["Л л","l"],["М м","m"],["Н н","n",1],["О о","o as in pot"],["П п","p",1],["Р р","rolled r",1],["С с","s",1],["Т т","t"],["У у","oo as in food",1],["Ф ф","f"],["Х х","h, like ch in loch",1],["Ц ц","ts as in cats"],["Ч ч","ch as in chair"],["Ш ш","sh as in ship"],["Щ щ","sht as in ashtray"],["Ъ ъ","u as in but (shown as u)",1],["Ь ь","softens: only in ьо = yo"],["Ю ю","yu as in you"],["Я я","ya as in yard"]];
+
+// ---------- state ----------
+const words=[];Object.entries(DATA).forEach(([cat,arr])=>arr.forEach(w=>words.push({cat,bg:w[0],tr:w[1],pr:w[2],en:w[3],exb:w[4],exe:w[5],note:w[6]||"",id:w[0]})));
+let known=new Set();try{known=new Set(JSON.parse(localStorage.getItem("bg-known")||"[]"))}catch(e){}
+function save(){try{localStorage.setItem("bg-known",JSON.stringify([...known]))}catch(e){}updateStats()}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function updateStats(){$("#knownCount").textContent=known.size;$("#totalCount").textContent=words.length;$("#meter").style.width=(known.size/words.length*100)+"%"}
+
+// ---------- speech ----------
+let bgVoice=null;
+function pickVoice(){if(!("speechSynthesis" in window))return;const v=speechSynthesis.getVoices();bgVoice=v.find(x=>/^bg/i.test(x.lang))||null;
+  $("#voiceNote").textContent=bgVoice?"Audio uses your device's Bulgarian voice ("+bgVoice.name+").":"No Bulgarian voice was found on this device, so audio may sound off or be silent. On Android, install Bulgarian in Google Text-to-speech; on iPhone, add Bulgarian under Settings › Accessibility › Spoken Content › Voices. The written pronunciation guide always works.";}
+if("speechSynthesis" in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}else{$("#voiceNote").textContent="This browser has no speech support; use the written pronunciation guide."}
+function say(t){if(!("speechSynthesis" in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[—…]/g," "));u.lang="bg-BG";if(bgVoice)u.voice=bgVoice;u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+
+// ---------- tabs ----------
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  ["learn","week","cards","quiz","abc"].forEach(v=>$("#"+v).hidden=v!==b.dataset.view);if(b.dataset.view==="week")renderWeek();
+  if(b.dataset.view==="cards")startCards();if(b.dataset.view==="quiz")startQuiz();if(b.dataset.view==="learn")renderList();
+});
+
+// ---------- learn ----------
+let cats=Object.keys(DATA);let curCat="All";
+function renderChips(){$("#chips").innerHTML=["All",...cats].map(c=>`<button class="chip" aria-pressed="${c===curCat}" data-c="${esc(c)}">${esc(c)}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{curCat=b.dataset.c;renderChips();renderList()})}
+function renderList(){
+  const q=$("#search").value.trim().toLowerCase();
+  const list=words.filter(w=>(curCat==="All"||w.cat===curCat)&&(!q||[w.bg,w.tr,w.en].some(s=>s.toLowerCase().includes(q))));
+  $("#list").innerHTML=list.length?list.map(w=>`<div class="word">
+    <div style="min-width:0"><div class="bg">${esc(w.bg)}</div><div class="en">${esc(w.en)}</div><div><span class="pron">${esc(w.pr)}</span>${w.tr?` <span class="tr">· ${esc(w.tr)}</span>`:""}</div></div>
+    <div class="side"><button class="icon" data-say="${esc(w.bg)}" aria-label="Play ${esc(w.bg)}">▶</button><button class="known" data-k="${esc(w.id)}" aria-pressed="${known.has(w.id)}">${known.has(w.id)?"Known":"Mark known"}</button></div>
+    ${w.exb?`<div class="ex"><q>${esc(w.exb)}</q> <button class="icon" style="width:26px;height:26px;font-size:11px;display:inline-grid;vertical-align:middle" data-say="${esc(w.exb)}" aria-label="Play example">▶</button><br>${esc(w.exe)}</div>`:""}
+    ${w.note?`<div class="note">${esc(w.note)}</div>`:""}</div>`).join(""):`<p class="empty">No words match “${esc(q)}”.</p>`;
+}
+$("#list").addEventListener("click",e=>{const s=e.target.closest("[data-say]");if(s){say(s.dataset.say);return}
+  const k=e.target.closest("[data-k]");if(k){const id=k.dataset.k;known.has(id)?known.delete(id):known.add(id);save();k.setAttribute("aria-pressed",known.has(id));k.textContent=known.has(id)?"Known":"Mark known"}});
+$("#search").addEventListener("input",renderList);
+
+// ---------- selects ----------
+function buildSelects(){["#cardCat","#quizCat"].forEach(s=>{const v=$(s).value;$(s).innerHTML=`<option value="All">All topics</option>`+cats.map(c=>`<option>${esc(c)}</option>`).join("");if(v&&[...$(s).options].some(o=>o.value===v))$(s).value=v})}
+buildSelects();
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+// ---------- flashcards ----------
+let deck=[],flipped=false,done=0;
+function startCards(){const c=$("#cardCat").value,pool=$("#cardPool").value;
+  deck=shuffle(words.filter(w=>(c==="All"||w.cat===c)&&(pool==="all"||!known.has(w.id))));done=0;flipped=false;drawCard()}
+function drawCard(){const a=$("#cardArea");
+  if(!deck.length){a.innerHTML=`<div class="card" style="cursor:default"><div class="big">Браво!</div><p class="sub">${done?`You went through ${done} card${done>1?"s":""}.`:"No cards here. You know every word in this topic, or switch to “All words”."}</p><button class="btn primary" id="again" style="flex:0 1 auto">Start again</button></div>`;$("#again").onclick=startCards;return}
+  const w=deck[0],dir=$("#cardDir").value;
+  const front=dir==="bg"?`<div class="big">${esc(w.bg)}</div>`:`<div class="big" style="font-size:clamp(1.6rem,6vw,2.3rem)">${esc(w.en)}</div>`;
+  a.innerHTML=`<div class="card" id="card" role="button" tabindex="0" aria-label="Flip card"><div class="hint">${esc(w.cat)}</div>${front}
+    ${flipped?`<div class="back">${dir==="bg"?`<div style="font-weight:700;font-size:1.2rem">${esc(w.en)}</div>`:`<div class="big" style="font-size:2.2rem">${esc(w.bg)}</div>`}
+      <div class="pron">${esc(w.pr)}</div>${w.exb?`<div class="ex" style="text-align:center"><q>${esc(w.exb)}</q><br>${esc(w.exe)}</div>`:""}${w.note?`<div class="note">${esc(w.note)}</div>`:""}</div>`:`<div class="hint" style="margin-top:12px">Tap to reveal</div>`}</div>
+    <div class="row" style="margin-top:12px">${flipped?`<button class="btn again" id="bAgain">Again</button><button class="icon" id="bSay" aria-label="Play">▶</button><button class="btn good" id="bGood">I know it</button>`:`<button class="icon" id="bSay" aria-label="Play">▶</button><button class="btn" id="bFlip">Show answer</button>`}</div>
+    <p class="sub">${deck.length} card${deck.length>1?"s":""} left · “Again” puts the card back later in the stack</p>`;
+  const flip=()=>{if(!flipped){flipped=true;drawCard();if(dir==="en")say(w.bg)}};
+  $("#card").onclick=flip;$("#card").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip()}};
+  $("#bSay").onclick=e=>{e.stopPropagation();say(w.bg)};
+  if($("#bFlip"))$("#bFlip").onclick=flip;
+  if($("#bGood"))$("#bGood").onclick=()=>{known.add(w.id);save();deck.shift();done++;flipped=false;drawCard()};
+  if($("#bAgain"))$("#bAgain").onclick=()=>{const x=deck.shift();deck.splice(Math.min(deck.length,3+Math.floor(Math.random()*3)),0,x);done++;flipped=false;drawCard()};
+}
+["#cardCat","#cardDir","#cardPool"].forEach(s=>$(s).onchange=startCards);
+
+// ---------- quiz ----------
+let qs=[],qi=0,score=0;
+function startQuiz(){const c=$("#quizCat").value;const pool=words.filter(w=>c==="All"||w.cat===c);
+  qs=shuffle(pool).slice(0,10).map(w=>{const others=shuffle(words.filter(x=>x!==w&&(x.cat===w.cat||pool.length<4))).slice(0,3);return{w,opts:shuffle([w,...others])}});qi=0;score=0;drawQ()}
+function drawQ(){const a=$("#quizArea"),dir=$("#quizDir").value;
+  if(qi>=qs.length){a.innerHTML=`<div class="card" style="cursor:default"><div class="hint">Your score</div><div class="score">${score} / ${qs.length}</div><p class="sub">${score===qs.length?"Перфектно! Perfect!":score>=qs.length*.7?"Много добре! Very good!":"Keep going, малко по малко."}</p><button class="btn primary" id="qAgain" style="flex:0 1 auto">New quiz</button></div>`;$("#qAgain").onclick=startQuiz;return}
+  const {w,opts}=qs[qi];
+  a.innerHTML=`<p class="sub">Question ${qi+1} of ${qs.length} · Score ${score}</p>
+    <div class="q" style="${dir==="en"?"font-size:1.7rem":""}">${esc(dir==="bg"?w.bg:w.en)}</div>
+    ${dir==="bg"?`<div class="row"><button class="icon" id="qSay" aria-label="Play">▶</button></div>`:""}
+    <div class="opts">${opts.map((o,i)=>`<button class="opt" data-i="${i}">${esc(dir==="bg"?o.en:o.bg)}</button>`).join("")}</div><div id="qFb"></div>`;
+  if($("#qSay")){$("#qSay").onclick=()=>say(w.bg)}
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const pick=opts[+b.dataset.i];
+    document.querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(opts[+x.dataset.i]===w)x.classList.add("right")});
+    if(pick===w)score++;else b.classList.add("wrong");say(w.bg);
+    $("#qFb").innerHTML=`<p class="sub" style="margin-top:12px"><b>${esc(w.bg)}</b> · <span class="pron">${esc(w.pr)}</span> · ${esc(w.en)}</p><div class="row"><button class="btn primary" id="qNext" style="flex:0 1 220px">${qi+1<qs.length?"Next":"See score"}</button></div>`;
+    $("#qNext").onclick=()=>{qi++;drawQ()};$("#qNext").focus();});
+}
+["#quizCat","#quizDir"].forEach(s=>$(s).onchange=startQuiz);
+
+// ---------- alphabet ----------
+$("#abcGrid").innerHTML=ABC.map(([l,s,t])=>`<button class="letter${t?" tricky":""}" data-l="${l[0]}"><b>${l}</b><span>${s}</span></button>`).join("");
+$("#abcGrid").onclick=e=>{const b=e.target.closest("[data-l]");if(b)say(b.dataset.l)};
+
+// ---------- this week (live from Google Sheet) ----------
+const SHEET_ID="1VeL-vXifxg0RB3iHTe5t-9IB0Kv9J5eRyd2WFB5eXBw",SHEET_RANGE="A1:H500",WEEK_CAT="This week";
+let weekItems=[],weekLabel="",mcpNs=null;
+const L2C=[["sht","щ"],["zh","ж"],["ch","ч"],["sh","ш"],["ts","ц"],["yu","ю"],["ya","я"],["yo","йо"],["a","а"],["b","б"],["v","в"],["g","г"],["d","д"],["e","е"],["z","з"],["i","и"],["y","й"],["k","к"],["l","л"],["m","м"],["n","н"],["o","о"],["p","п"],["r","р"],["s","с"],["t","т"],["u","у"],["f","ф"],["h","х"],["c","ц"],["w","в"],["j","дж"],["x","кс"],["q","к"]];
+// Rough Latin→Cyrillic, used only when the sheet's cyrillic column is empty. Text in (brackets) is left alone.
+function toCyr(s){let out="",i=0;const lo=s.toLowerCase();while(i<s.length){if(s[i]==="("){const j=s.indexOf(")",i);const end=j<0?s.length:j+1;out+=s.slice(i,end);i=end;continue}
+  const m=L2C.find(([l])=>lo.startsWith(l,i));if(m){out+=s[i]!==lo[i]?m[1][0].toUpperCase()+m[1].slice(1):m[1];i+=m[0].length}else{out+=s[i];i++}}return out}
+function findValues(x,d=0){if(d>7||x==null)return null;
+  if(typeof x==="string"){try{return findValues(JSON.parse(x),d+1)}catch(e){return null}}
+  if(Array.isArray(x)){for(const y of x){const r=findValues(y,d+1);if(r)return r}return null}
+  if(typeof x==="object"){if(Array.isArray(x.values))return x.values;for(const k of ["payload","structuredContent","data","result","content","text"])if(k in x){const r=findValues(x[k],d+1);if(r)return r}}return null}
+function parseSheet(rows){const hi=rows.findIndex(r=>Array.isArray(r)&&r.some(c=>/^\s*phrase\s*$/i.test(String(c??""))));if(hi<0)return[];
+  const h=rows[hi].map(c=>String(c??"").trim().toLowerCase()),col=n=>h.indexOf(n);
+  const P=col("phrase"),T=col("translation"),C=col("cyrillic"),X=col("context"),W=col("week");
+  let items=rows.slice(hi+1).map(r=>{const g=i=>i<0||!Array.isArray(r)?"":String(r[i]??"").trim();return{en:g(P),tr:g(T),cy:g(C),ctx:g(X),wk:g(W)}}).filter(x=>x.en||x.tr||x.cy);
+  weekLabel="";const wks=items.map(x=>x.wk).filter(Boolean);if(wks.length){weekLabel=wks[wks.length-1];items=items.filter(x=>x.wk===weekLabel)}
+  return items.map(x=>({cat:WEEK_CAT,bg:x.cy||toCyr(x.tr)||x.en,auto:!x.cy&&!!x.tr,pr:x.tr,tr:"",en:x.en||x.tr,exb:"",exe:"",note:x.ctx,id:"wk:"+x.en+"|"+x.tr}))}
+function fmtTime(t){const d=t?new Date(t):new Date();return isNaN(d)?"":d.toLocaleString([], {weekday:"short",hour:"2-digit",minute:"2-digit"})}
+function setWeekStatus(t){$("#weekStatus").textContent=t}
+function applyRows(rows,stamp,live){weekItems=parseSheet(rows);if(live){try{localStorage.setItem("bg-week-rows",JSON.stringify(rows))}catch(e){}}
+  for(let i=words.length-1;i>=0;i--)if(words[i].cat===WEEK_CAT)words.splice(i,1);
+  words.unshift(...weekItems);cats=weekItems.length?[WEEK_CAT,...Object.keys(DATA)]:Object.keys(DATA);
+  if(curCat===WEEK_CAT&&!weekItems.length)curCat="All";
+  renderChips();buildSelects();updateStats();renderWeek();if(!$("#learn").hidden)renderList();
+  if(live)setWeekStatus("Live from your Google Sheet · updated "+fmtTime(stamp)+".")}
+function renderWeek(){const n=weekItems.filter(w=>known.has(w.id)).length;
+  $("#weekProg").innerHTML=weekItems.length?`${weekLabel?`<b>${esc(weekLabel)}</b> · `:""}<b>${n}</b> / <b>${weekItems.length}</b> learned`:"";
+  $("#weekMeter").style.width=weekItems.length?(n/weekItems.length*100)+"%":"0";
+  $("#wkCards").disabled=$("#wkQuiz").disabled=!weekItems.length;
+  $("#weekList").innerHTML=weekItems.length?weekItems.map(w=>`<div class="word">
+    <div style="min-width:0"><div class="bg">${esc(w.bg)}${w.auto?` <span class="auto" title="Spelled automatically from the Latin letters, so it may be off. Fill the cyrillic column in the sheet to fix it.">≈ auto</span>`:""}</div><div class="en">${esc(w.en)}</div>${w.pr?`<div class="pron">${esc(w.pr)}</div>`:""}</div>
+    <div class="side"><button class="icon" data-say="${esc(w.bg)}" aria-label="Play ${esc(w.bg)}">▶</button><button class="known" data-k="${esc(w.id)}" aria-pressed="${known.has(w.id)}">${known.has(w.id)?"Learned":"Mark learned"}</button></div>
+    ${w.note?`<div class="note">${esc(w.note)}</div>`:""}</div>`).join(""):`<p class="empty">No objectives yet. Add rows under the phrase / translation / cyrillic / context headers in your sheet.</p>`}
+$("#weekList").addEventListener("click",e=>{const s=e.target.closest("[data-say]");if(s){say(s.dataset.say);return}
+  const k=e.target.closest("[data-k]");if(k){const id=k.dataset.k;known.has(id)?known.delete(id):known.add(id);save();renderWeek()}});
+function drill(view){if(view==="cards"){$("#cardCat").value=WEEK_CAT;$("#cardPool").value="all"}else $("#quizCat").value=WEEK_CAT;document.querySelector(`nav button[data-view="${view}"]`).click()}
+$("#wkCards").onclick=()=>drill("cards");$("#wkQuiz").onclick=()=>drill("quiz");
+function weekError(e){const code=(e&&(e.code||(e.error&&e.error.code)))||"";
+  setWeekStatus(code==="server_not_connected"?"Connect Google Sheets in Claude to load your list.":(code==="consent_required"||code==="permission_denied"||code==="forbidden")?"Allow this page to read your Google Sheet to load the list.":"Couldn't reach your Google Sheet just now"+(weekItems.length?", showing the last saved list.":"."))}
+// cached copy first, then live
+try{const c=JSON.parse(localStorage.getItem("bg-week-rows")||"null");if(c){applyRows(c);setWeekStatus("Showing the last saved list…")}}catch(e){}
+(async()=>{try{mcpNs=window.claude&&claude.use?await claude.use("mcp"):null}catch(e){mcpNs=null}
+  if(!mcpNs){setWeekStatus(weekItems.length?"Showing the last saved list. Open the app in Claude to get live updates from your sheet.":"Open the app in Claude, with Google Sheets connected, to load this week's list.");return}
+  const input={spreadsheetId:SHEET_ID,range:SHEET_RANGE};
+  $("#wkRefresh").hidden=false;
+  $("#wkRefresh").onclick=async()=>{setWeekStatus("Refreshing…");try{const r=await mcpNs.callTool("Google Sheets","get_values",input);const v=findValues(r);if(v)applyRows(v,null,true);else setWeekStatus("The sheet came back empty.")}catch(e){weekError(e)}};
+  try{mcpNs.watchTool("Google Sheets","get_values",input,ev=>{
+    if(ev&&(ev.type==="error"||ev.error)){weekError(ev.error||ev);return}
+    const v=findValues(ev);if(v)applyRows(v,ev&&ev.cache&&ev.cache.storedAt,true)},{refetchInterval:5*60*1000})}catch(e){weekError(e)}
+})();
+
+renderChips();renderList();updateStats();
+</script>
+
+</body></html>
